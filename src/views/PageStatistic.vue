@@ -1,3 +1,5 @@
 <script setup lang="ts"></script>
 
-<template>Page Statistic</template>
+<template>
+  <h1>Statistic</h1>
+</template>
