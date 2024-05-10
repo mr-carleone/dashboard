@@ -1,3 +1,5 @@
 <script setup lang="ts"></script>
 
-<template>Page Interview</template>
+<template>
+  <h1>Interview</h1>
+</template>

@@ -1,18 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useUserStore } from '@/stores/user'
 import type { RouteRecordRaw, RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 const checkAuth = (
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) => {
-  const userStore = useUserStore()
-  if (!userStore.userId) {
-    next({ name: 'Auth' })
-  } else {
-    next()
-  }
+  let isAuth = false
+
+  onAuthStateChanged(getAuth(), (user) => {
+    if (user && !isAuth) {
+      isAuth = true
+      next()
+    } else if (!user && !isAuth) {
+      isAuth = true
+      next('/auth')
+    }
+  })
 }
 
 const routes: RouteRecordRaw[] = [
@@ -25,7 +30,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/auth',
     name: 'Auth',
-    component: () => import('@/views/PageAuth.vue'),
+    component: () => import('@/views/PageAuth.vue')
+  },
+  {
+    path: '/interview/:id',
+    name: 'Interview',
+    component: () => import('@/views/PageInterview.vue'),
     beforeEnter: checkAuth
   },
   {
@@ -38,12 +48,6 @@ const routes: RouteRecordRaw[] = [
     path: '/statistic',
     name: 'Statistic',
     component: () => import('@/views/PageStatistic.vue'),
-    beforeEnter: checkAuth
-  },
-  {
-    path: '/interview/:id',
-    name: 'Interview',
-    component: () => import('@/views/PageInterview.vue'),
     beforeEnter: checkAuth
   }
 ]
